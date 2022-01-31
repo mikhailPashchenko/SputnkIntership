@@ -3,7 +3,7 @@ require_relative './F_interesting_travel'
 def assert(filename, expected_value)
   result = Travel::TravelData.new(filename).roads_min_number
   if result != expected_value
-    puts "error in test #{test}: expected #{expected_value}, got: result"
+    puts "error in test #{test}: expected #{expected_value}, got: #{result}"
   end
 end
 
