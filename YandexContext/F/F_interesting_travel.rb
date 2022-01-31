@@ -42,24 +42,28 @@ module Travel
 
       file.close
 
-      puts "n = #{n}"
-      puts "max distance = #{@max_distance}"
-      @all_cities.each { |c| puts c }
-      puts "start:  #{@start_city.to_s }"
-      puts "finish: #{@finish_city.to_s }"
+      # puts "n = #{n}"
+      # puts "max distance = #{@max_distance}"
+      # @all_cities.each { |c| puts c }
+      # puts "start:  #{@start_city.to_s }"
+      # puts "finish: #{@finish_city.to_s }"
     end
 
     def roads_min_number
       available_cities = [@start_city]
       
       finish_city = nil
-      until available_cities.empty? || (finish_city = available_cities.find { |city| city.id == @finish_city.id }) do
+      loop do
         temp = available_cities.map do |city|
           next_cities(city, @all_cities, @max_distance)
           #binding.pry
         end
         available_cities = temp.flatten
         #binding.pry
+        if (finish_city = available_cities.find { |city| city.id == @finish_city.id }) || available_cities.empty?
+          #binding.pry
+          break
+        end
       end
 
       result = 
@@ -82,5 +86,5 @@ module Travel
   end
 end
 
-#result = Travel::TravelData.new("input.txt").roads_min_number
-#File.write("output.txt", result)
+result = Travel::TravelData.new("input.txt").roads_min_number
+File.write("output.txt", result)

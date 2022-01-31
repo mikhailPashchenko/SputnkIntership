@@ -7,6 +7,7 @@ def assert(filename, expected_value)
   end
 end
 
+assert("input_0.txt", -1)
 assert("input.txt", 3)
 assert("input2.txt", 1)
 assert("input3.txt", -1)
