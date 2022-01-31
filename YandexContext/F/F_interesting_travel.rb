@@ -1,6 +1,6 @@
 require 'pry'
 
-module Roads
+module Travel
   class City
 
     attr_reader :id, :x, :y
@@ -22,58 +22,65 @@ module Roads
     end
   end
 
-  def next_cities(current_city, all_cities, max_distanse)
-    cities = all_cities.select do |city|
-      city.route_index > current_city.route_index && current_city.distance(city) <= max_distanse
+  class TravelData
+    def initialize(filename)
+      file = File.open(filename)
+
+      n = file.readline.chomp.to_i
+      @all_cities = []
+      for i in (1..n) do
+        @all_cities.append(City.new(i, file.readline.chomp.split(" "), n + 1))
+      end
+
+      @max_distance = file.readline.chomp.to_i
+
+      start_city_id, finish_city_id = file.readline.chomp.split(" ").map{|c| c.to_i}
+      @start_city = @all_cities[start_city_id - 1]
+      @start_city.route_index = 0
+      @all_cities[start_city_id - 1] = @start_city
+      @finish_city = @all_cities[finish_city_id - 1]
+
+      file.close
+
+      puts "n = #{n}"
+      puts "max distance = #{@max_distance}"
+      @all_cities.each { |c| puts c }
+      puts "start:  #{@start_city.to_s }"
+      puts "finish: #{@finish_city.to_s }"
     end
 
-    cities.each { |city| city.route_index= [current_city.route_index + 1, city.route_index].min }
-    cities
-  end
-
-
-  def roads_min_number(filename)
-    file = File.open(filename)
-    n = file.readline.chomp.to_i
-    cities = []
-    for i in (1..n) do
-      cities.append(City.new(i, file.readline.chomp.split(" "), n + 1))
-    end
-
-    k = file.readline.chomp.to_i
-    start_city_id, finish_city_id = file.readline.chomp.split(" ").map{|c| c.to_i}
-    start_city = cities[start_city_id - 1]
-    start_city.route_index = 0
-    cities[start_city_id - 1] = start_city
-    finish_city = cities[finish_city_id - 1]
-    file.close
-
-    puts "n = #{n}"
-    puts "max distance = #{k}"
-    cities.each { |c| puts c }
-    puts "start:  #{start_city.to_s }"
-    puts "finish: #{finish_city.to_s }"
-
-    available_cities = [start_city]
-    loop do
-      temp = available_cities.map do |city|
-        t = next_cities(city, cities, k)
+    def roads_min_number
+      available_cities = [@start_city]
+      
+      finish_city = nil
+      until available_cities.empty? || (finish_city = available_cities.find { |city| city.id == @finish_city.id }) do
+        temp = available_cities.map do |city|
+          next_cities(city, @all_cities, @max_distance)
+          #binding.pry
+        end
+        available_cities = temp.flatten
         #binding.pry
       end
-      available_cities = temp.flatten
-      #binding.pry
-      if (finish_city = available_cities.find { |city| city.id == finish_city_id }) || available_cities.empty?
-        #binding.pry
-        break
-      end
+
+      result = 
+        if finish_city
+          finish_city.route_index
+        else
+          -1
+        end
     end
 
-    result = 
-      if finish_city
-        finish_city.route_index
-      else
-        -1
+    private
+    def next_cities(current_city, all_cities, max_distance)
+      cities = all_cities.select do |city|
+        city.route_index > current_city.route_index && current_city.distance(city) <= max_distance
       end
-    File.write("output.txt", result)
+
+      cities.each { |city| city.route_index= [current_city.route_index + 1, city.route_index].min }
+      cities
+    end
   end
 end
+
+#result = Travel::TravelData.new("input.txt").roads_min_number
+#File.write("output.txt", result)
