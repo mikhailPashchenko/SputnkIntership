@@ -26,52 +26,43 @@ module Travel
     def initialize(filename)
       file = File.open(filename)
 
+      # read cities number from first line
       n = file.readline.chomp.to_i
+
+      # read cities coordinates from next n lines and set index = n + 1
       @all_cities = []
       for i in (1..n) do
-        @all_cities.append(City.new(i, file.readline.chomp.split(" "), n + 1))
+        @all_cities.push(City.new(i, file.readline.chomp.split(" "), n + 1))
       end
 
+      # read max distance from next line
       @max_distance = file.readline.chomp.to_i
 
+      #read start city and finish city ids from last line
       start_city_id, finish_city_id = file.readline.chomp.split(" ").map{|c| c.to_i}
+
       @start_city = @all_cities[start_city_id - 1]
-      @start_city.route_index = 0
-      @all_cities[start_city_id - 1] = @start_city
       @finish_city = @all_cities[finish_city_id - 1]
 
-      file.close
+      # set 0 index to start city
+      @start_city.route_index = 0
 
-      # puts "n = #{n}"
-      # puts "max distance = #{@max_distance}"
-      # @all_cities.each { |c| puts c }
-      # puts "start:  #{@start_city.to_s }"
-      # puts "finish: #{@finish_city.to_s }"
+      file.close
     end
 
     def roads_min_number
       available_cities = [@start_city]
       
-      finish_city = nil
       loop do
-        temp = available_cities.map do |city|
-          next_cities(city, @all_cities, @max_distance)
-          #binding.pry
-        end
+        temp = available_cities.map { |city| next_cities(city, @all_cities, @max_distance) }
         available_cities = temp.flatten
-        #binding.pry
-        if (finish_city = available_cities.find { |city| city.id == @finish_city.id }) || available_cities.empty?
-          #binding.pry
-          break
+
+        if available_cities.include? @finish_city
+          return @finish_city.route_index
+        elsif available_cities.empty?
+          return -1
         end
       end
-
-      result = 
-        if finish_city
-          finish_city.route_index
-        else
-          -1
-        end
     end
 
     private
@@ -80,8 +71,7 @@ module Travel
         city.route_index > current_city.route_index && current_city.distance(city) <= max_distance
       end
 
-      cities.each { |city| city.route_index= [current_city.route_index + 1, city.route_index].min }
-      cities
+      cities.each { |city| city.route_index = [current_city.route_index + 1, city.route_index].min }
     end
   end
 end
