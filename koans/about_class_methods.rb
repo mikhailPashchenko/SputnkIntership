@@ -157,7 +157,9 @@ class AboutClassMethods < Neo::Koan
   #   end
   #
   # Which do you prefer and why?
+  # my answer: I prefer second way class << self becouse it's more readable
   # Are there times you might prefer one over the other?
+  # my answer: I always prefer second way, it's my principled position :)
 
   # ------------------------------------------------------------------
 
