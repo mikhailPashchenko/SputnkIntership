@@ -15,7 +15,8 @@
 #
 def triangle(a, b, c)
   sides = [a,b,c]
-  if sides.any? { |side| side <= 0 || 2*side >= sides.sum }
+  sum = a + b + c
+  if sides.any? { |side| side <= 0 || 2*side >= sum }
     fail TriangleError
   end
 

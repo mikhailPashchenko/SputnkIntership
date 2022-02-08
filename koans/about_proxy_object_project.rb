@@ -30,7 +30,7 @@ class Proxy
   end
 
   def called?(method)
-    @messages_with_call_counters.include?(method)
+    @messages_with_call_counters.key? method
   end
 
   def number_of_times_called(method)
