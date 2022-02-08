@@ -1,9 +1,12 @@
-n = File.read("input.txt").to_i * 2
+n = 10 # количество скобок
 
 sequence_arr = [] # пустой массив, куда кладем скобки
 
+left_minus_right = 0 # разница между количеством левых и правых скобок
+i = 0 # индекс, по которому кладем скобку в массив
+
 def generator(left_minus_right, i, n, sequence_arr)
-  # кладем откр. скобку, только если хватит места для (left_minus_right + 1) закрыв. скобок
+  # кладем откр. скобку, только если хватает места для еще одной пары ()
   if (left_minus_right <= n - i - 2)
     sequence_arr[i] = '('
     generator(left_minus_right + 1, i + 1, n, sequence_arr)
@@ -21,4 +24,4 @@ def generator(left_minus_right, i, n, sequence_arr)
   end
 end
 
-puts generator(0,0,n,sequence_arr)
+generator(0, 0, n, sequence_arr)
